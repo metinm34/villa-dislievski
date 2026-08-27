@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Villa Dislievski 5-Star Hotel & Suites</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              midnight: '#0F0F11',
+              champagne: '#E6D5B8',
+              gold: '#C5A880',
+            },
+            fontFamily: {
+              serif: ['Cinzel', 'serif'],
+              sans: ['Plus Jakarta Sans', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="bg-[#0A0A0C] text-[#E6D5B8] font-sans antialiased min-h-screen">
+    
+    <!-- Admin Navbar -->
+    <header class="border-b border-[#E6D5B8]/20 bg-[#121216] px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-full border border-[#E6D5B8]/40 bg-[#1A1A1E] flex items-center justify-center font-serif text-[#E6D5B8] font-bold">
+          VD
+        </div>
+        <div>
+          <h1 class="font-serif text-lg font-bold text-white tracking-widest">
+            VILLA DISLIEVSKI
+          </h1>
+          <p class="text-[10px] text-[#A19A8C] uppercase tracking-wider">
+            Admin Management Portal · Ohrid
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3" id="nav-actions">
+        <a href="/" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#1F1F24] text-[#D5C9B3] hover:text-white border border-[#E6D5B8]/15 transition-colors">
+          ← Public Guest View
+        </a>
+        <button id="logout-btn" class="hidden px-3 py-1.5 rounded-lg text-xs text-red-300 bg-red-950/40 border border-red-500/30 hover:bg-red-900/40 transition-colors">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Login Modal (Active if not authenticated) -->
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div class="relative w-full max-w-md rounded-2xl bg-[#16161A] border border-[#E6D5B8]/35 p-8 shadow-2xl">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 rounded-full border border-[#E6D5B8]/40 bg-[#1F1E24] flex items-center justify-center mx-auto mb-3 text-[#E6D5B8]">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h2 class="font-serif text-2xl font-bold text-white">ADMIN LOGIN</h2>
+          <p class="text-xs text-[#A19A8C] mt-1">Sign in with Villa Dislievski staff credentials</p>
+        </div>
+
+        <div id="login-error" class="hidden mb-4 p-3 rounded-lg bg-red-950/50 border border-red-500/40 text-red-200 text-xs text-center"></div>
+
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-[#A19A8C] mb-1">Email</label>
+            <input
+              type="text"
+              id="login-email"
+              required
+              value="admin@villadislievski.com"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#101013] border border-[#E6D5B8]/20 text-xs text-white focus:outline-none focus:border-[#E6D5B8]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-[#A19A8C] mb-1">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              required
+              value="luxury2026"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#101013] border border-[#E6D5B8]/20 text-xs text-white focus:outline-none focus:border-[#E6D5B8]"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3.5 rounded-full text-xs uppercase tracking-widest font-bold bg-[#E6D5B8] text-[#0F0F11] hover:bg-white transition-all duration-300 mt-2"
+          >
+            Access Dashboard
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Protected Dashboard Container -->
+    <main id="dashboard-container" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      <!-- KPI Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-[#141418] border border-[#E6D5B8]/15 shadow-xl">
+          <div class="text-[10px] uppercase text-[#A19A8C]">Total Revenue</div>
+          <div id="stat-revenue" class="text-2xl font-serif font-bold text-white mt-1">€0</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#141418] border border-[#E6D5B8]/15 shadow-xl">
+          <div class="text-[10px] uppercase text-[#A19A8C]">Total Bookings</div>
+          <div id="stat-bookings" class="text-2xl font-serif font-bold text-white mt-1">0</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#141418] border border-[#E6D5B8]/15 shadow-xl">
+          <div class="text-[10px] uppercase text-[#A19A8C]">Occupancy Rate</div>
+          <div id="stat-occupancy" class="text-2xl font-serif font-bold text-[#E6D5B8] mt-1">0%</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#141418] border border-[#E6D5B8]/15 shadow-xl">
+          <div class="text-[10px] uppercase text-[#A19A8C]">Average Stay</div>
+          <div id="stat-stay" class="text-2xl font-serif font-bold text-white mt-1">0 Nights</div>
+        </div>
+      </div>
+
+      <!-- Reservations Management Panel -->
+      <div class="rounded-2xl bg-[#141418] border border-[#E6D5B8]/20 p-6 shadow-2xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <!-- Filter Tabs -->
+          <div class="flex items-center space-x-2 p-1 rounded-xl bg-[#0F0F12] border border-[#E6D5B8]/15" id="filter-tabs">
+            <button data-filter="all" class="filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold bg-[#E6D5B8] text-[#0F0F11]">
+              All
+            </button>
+            <button data-filter="pending" class="filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold text-[#A19A8C] hover:text-[#E6D5B8]">
+              Pending
+            </button>
+            <button data-filter="confirmed" class="filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold text-[#A19A8C] hover:text-[#E6D5B8]">
+              Confirmed
+            </button>
+            <button data-filter="checked-in" class="filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold text-[#A19A8C] hover:text-[#E6D5B8]">
+              Checked-In
+            </button>
+          </div>
+
+          <!-- Search Input -->
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search guest or ref..."
+            class="w-full sm:w-64 px-3.5 py-1.5 rounded-xl bg-[#0F0F12] border border-[#E6D5B8]/15 text-xs text-white focus:outline-none focus:border-[#E6D5B8]"
+          />
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-[#E6D5B8]/15 text-[#A19A8C] uppercase tracking-wider text-[10px]">
+                <th class="py-3 px-4">Ref & Guest</th>
+                <th class="py-3 px-4">Suite</th>
+                <th class="py-3 px-4">Check-In / Out</th>
+                <th class="py-3 px-4">Guests</th>
+                <th class="py-3 px-4">Price</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody" class="divide-y divide-[#E6D5B8]/10 text-[#D5C9B3]">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </main>
+
+    <script>
+      let currentToken = localStorage.getItem('villa_admin_token') || '';
+      let currentBookings = [];
+      let activeFilter = 'all';
+
+      const loginModal = document.getElementById('login-modal');
+      const dashboardContainer = document.getElementById('dashboard-container');
+      const loginForm = document.getElementById('login-form');
+      const loginError = document.getElementById('login-error');
+      const logoutBtn = document.getElementById('logout-btn');
+      const bookingsTbody = document.getElementById('bookings-tbody');
+      const searchInput = document.getElementById('search-input');
+
+      // Initialize
+      if (currentToken) {
+        verifySession();
+      }
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.classList.add('hidden');
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Login failed');
+
+          currentToken = data.token;
+          localStorage.setItem('villa_admin_token', currentToken);
+          localStorage.setItem('villa_admin_user', JSON.stringify(data.user));
+          showDashboard();
+        } catch (err) {
+          loginError.textContent = err.message;
+          loginError.classList.remove('hidden');
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('villa_admin_token');
+        localStorage.removeItem('villa_admin_user');
+        currentToken = '';
+        loginModal.classList.remove('hidden');
+        dashboardContainer.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+      });
+
+      async function verifySession() {
+        try {
+          const res = await fetch('/api/admin/me', {
+            headers: { Authorization: `Bearer ${currentToken}` }
+          });
+          if (res.ok) {
+            showDashboard();
+          } else {
+            currentToken = '';
+            loginModal.classList.remove('hidden');
+          }
+        } catch {
+          currentToken = '';
+          loginModal.classList.remove('hidden');
+        }
+      }
+
+      function showDashboard() {
+        loginModal.classList.add('hidden');
+        dashboardContainer.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        fetchData();
+      }
+
+      async function fetchData() {
+        try {
+          // Bookings
+          const bRes = await fetch('/api/admin/bookings', {
+            headers: { Authorization: `Bearer ${currentToken}` }
+          });
+          const bData = await bRes.json();
+          if (bData.success) {
+            currentBookings = bData.bookings;
+            renderTable();
+          }
+
+          // Stats
+          const sRes = await fetch('/api/admin/stats', {
+            headers: { Authorization: `Bearer ${currentToken}` }
+          });
+          const sData = await sRes.json();
+          if (sData.success) {
+            document.getElementById('stat-revenue').textContent = '€' + sData.stats.totalRevenue.toLocaleString();
+            document.getElementById('stat-bookings').textContent = sData.stats.totalBookings;
+            document.getElementById('stat-occupancy').textContent = sData.stats.occupancyRate + '%';
+            document.getElementById('stat-stay').textContent = sData.stats.averageStayNights + ' Nights';
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function renderTable() {
+        const query = searchInput.value.toLowerCase().trim();
+        const filtered = currentBookings.filter(b => {
+          const matchesFilter = activeFilter === 'all' || b.status === activeFilter;
+          const matchesSearch = !query || 
+            b.guestName.toLowerCase().includes(query) ||
+            b.bookingReference.toLowerCase().includes(query) ||
+            b.roomName.toLowerCase().includes(query);
+          return matchesFilter && matchesSearch;
+        });
+
+        bookingsTbody.innerHTML = filtered.map(b => `
+          <tr class="hover:bg-[#1C1B20]/60 transition-colors">
+            <td class="py-3.5 px-4">
+              <div class="font-mono font-bold text-[#E6D5B8]">${b.bookingReference}</div>
+              <div class="font-medium text-white">${b.guestName}</div>
+              <div class="text-[10px] text-[#A19A8C]">${b.email}</div>
+            </td>
+            <td class="py-3.5 px-4 font-serif text-white">${b.roomName}</td>
+            <td class="py-3.5 px-4">
+              <div>${b.checkIn}</div>
+              <div class="text-[10px] text-[#A19A8C]">to ${b.checkOut} (${b.nights}n)</div>
+            </td>
+            <td class="py-3.5 px-4">${b.adultsCount} Adults</td>
+            <td class="py-3.5 px-4 font-bold text-[#E6D5B8]">€${b.totalPrice}</td>
+            <td class="py-3.5 px-4">
+              <select onchange="updateBookingStatus('${b.id}', this.value)" class="px-2 py-1 rounded text-[10px] font-bold uppercase bg-[#0F0F12] border border-[#E6D5B8]/30 text-white cursor-pointer">
+                <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="checked-in" ${b.status === 'checked-in' ? 'selected' : ''}>Checked-In</option>
+                <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <button onclick="deleteBooking('${b.id}')" class="px-2.5 py-1 rounded bg-red-950/40 text-red-300 hover:bg-red-900 border border-red-500/30 text-[10px]">
+                Delete
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+        lucide.createIcons();
+      }
+
+      window.updateBookingStatus = async function(id, newStatus) {
+        try {
+          await fetch('/api/admin/bookings/' + id, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${currentToken}`
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+          fetchData();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      window.deleteBooking = async function(id) {
+        if (!confirm('Permanently remove this reservation?')) return;
+        try {
+          await fetch('/api/admin/bookings/' + id, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${currentToken}` }
+          });
+          fetchData();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      // Filter tabs event listeners
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-tab').forEach(b => {
+            b.className = 'filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold text-[#A19A8C] hover:text-[#E6D5B8]';
+          });
+          btn.className = 'filter-tab px-4 py-1.5 rounded-lg text-xs font-semibold bg-[#E6D5B8] text-[#0F0F11]';
+          activeFilter = btn.getAttribute('data-filter');
+          renderTable();
+        });
+      });
+
+      searchInput.addEventListener('input', renderTable);
+    </script>
+  </body>
+</html>

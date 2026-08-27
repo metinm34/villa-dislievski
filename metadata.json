@@ -1,0 +1,6 @@
+{
+  "name": "Villa Dislievski - Luxury Hotel & Suites",
+  "description": "5-star boutique luxury hotel and suites overlooking Lake Ohrid with interactive room reservations, live pricing calculator, and protected admin guest management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
